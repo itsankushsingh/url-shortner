@@ -121,8 +121,46 @@ return res
 
 })
 
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(req.user._id, {
+        $unset: {
+            refreshToken:1
+        }
+    })
+    const options = {
+        httpOnly: true,
+        secure: true,
+    }
+
+    return res 
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200,"User Logout Successfully"))
+})
+
+const changePassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    if (
+        [oldPassword,newPassword].some((field)=>field?.trim()==="")
+    ) {
+        throw new ApiError(400,"Fields Are Required")
+    }
+    const user = await User.findById(req.user._id);
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword)
+
+    if (!isPasswordValid) {
+        throw new ApiError(401,"Please Enter Correct Current Password.")
+    }
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+
+    return res.json(new ApiResponse(200,"Password Changed"))
+
+})
 export {
     registerUser,
-    loginUser
-    
+    loginUser,
+    logoutUser,
+    changePassword,
 }

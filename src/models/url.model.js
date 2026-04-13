@@ -2,6 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 
 const urlSchema = new Schema({
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     originalURL: {
         type: String,
         required: true,
@@ -15,9 +20,21 @@ const urlSchema = new Schema({
         type: Number,
         default:0
     },
+    clickHistory: [
+        {
+            timestamp: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
     isActive: {
         type: Boolean,
         default:true,
+    },
+    metadata: {
+        type: Object,
+        default:{},
     }
 }, {
     timestamps: true
@@ -27,4 +44,4 @@ const urlSchema = new Schema({
 const Url = mongoose.model("Url", urlSchema)
 
 
-export { URL }
+export { Url }

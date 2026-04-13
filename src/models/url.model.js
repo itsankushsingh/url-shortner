@@ -7,7 +7,7 @@ const urlSchema = new Schema({
         ref: "User",
         required: true,
     },
-    originalURL: {
+    originalUrl: {
         type: String,
         required: true,
     },

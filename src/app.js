@@ -26,10 +26,11 @@ app.use(cookiesParser())
 
 //Import Routes
 import userRoutes from '../src/routes/user.routes.js'
+import urlRoutes from '../src/routes/url.routes.js'
 
 //Routes
 app.use('/api/v1/user',userRoutes)
-// app.use('/api/v1/url')
+app.use('/api/v1/url',urlRoutes)
 
 
 export { app };

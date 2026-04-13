@@ -18,13 +18,37 @@ const createShortCode = asyncHandler(async (req, res) => {
         shortCode,
     }).save()
 
-    
+
     return res
         .status(200).json(
         new ApiResponse(200,"Link Shorted Successfully",newUrl)
     )
 })
 
+const redirect = asyncHandler(async (req, res) => {
+    const shortCode = req.params.code;
+
+    const url = await Url.findOne({ shortCode }).select("originalUrl clicks clickHistory")
+
+    if (!url) {
+        throw new ApiError(404,"Url Not Found.")
+    }
+
+    const updatedUrl = await Url.findByIdAndUpdate(url._id, {
+        $inc: { clicks: 1 },
+        $push: {
+            clickHistory: {
+                timestamp: new Date()   
+            }
+        }
+    },
+    {new: true});
+    console.log(updatedUrl)
+
+    return res.status(200).json(new ApiResponse(200,"Redirected",updatedUrl))
+})
+
 export {
     createShortCode,
+    redirect,
 }
